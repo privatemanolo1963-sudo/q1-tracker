@@ -263,6 +263,51 @@
       margin: 0;
     }
     
+    .rest-day {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px dashed rgba(255, 255, 255, 0.1);
+    }
+    
+    .rest-day-text {
+      text-align: center;
+      color: rgba(255, 255, 255, 0.3);
+      font-size: 14px;
+      padding: 8px;
+    }
+    
+    .water-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    
+    .water-btn {
+      padding: 16px 8px;
+      border-radius: 12px;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .water-done {
+      background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+    }
+    
+    .water-pending {
+      background: rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.7);
+      border: 1px dashed rgba(255, 255, 255, 0.2);
+    }
+    
     .dual-input {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -283,16 +328,45 @@
       display: block;
     }
     
-    .rest-day {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px dashed rgba(255, 255, 255, 0.1);
+    .week-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
     
-    .rest-day-text {
-      text-align: center;
-      color: rgba(255, 255, 255, 0.3);
+    .week-nav-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .week-nav-btn:active {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    
+    .week-nav-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+    
+    .week-nav-label {
       font-size: 14px;
-      padding: 8px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.8);
     }
     
     .footer {
@@ -351,15 +425,7 @@
           <span class="card-title">Peso</span>
           <span class="emoji">⚖️</span>
         </div>
-        <input
-          type="number"
-          step="0.1"
-          class="input-field"
-          placeholder="--.-"
-          id="weight-input"
-          inputmode="decimal"
-          onchange="updateField('weight', this.value)"
-        >
+        <input type="number" step="0.1" class="input-field" placeholder="--.-" id="weight-input" inputmode="decimal" onchange="updateField('weight', this.value)">
         <div class="unit">kg</div>
         <div class="progress-container">
           <div class="progress-bar">
@@ -379,9 +445,7 @@
           <span class="card-title">Ginnastica Mattutina</span>
           <span class="emoji">🧘</span>
         </div>
-        <button class="toggle-btn toggle-pending" id="gym-btn" onclick="toggleField('gym')">
-          Programma
-        </button>
+        <button class="toggle-btn toggle-pending" id="gym-btn" onclick="toggleField('gym')">Programma</button>
         <div class="schedule-hint" id="gym-hint"></div>
       </div>
 
@@ -397,12 +461,24 @@
       <!-- Water Card -->
       <div class="card">
         <div class="card-header">
-          <span class="card-title">Acqua (oltre pasti)</span>
+          <span class="card-title">Acqua (3 × 0.5L)</span>
           <span class="emoji">💧</span>
         </div>
-        <button class="toggle-btn toggle-pending" id="water-btn" onclick="toggleField('water')">
-          Obiettivo: 1 litro
-        </button>
+        <div class="water-grid">
+          <button class="water-btn water-pending" id="water1-btn" onclick="toggleField('water1')">
+            <span style="font-size: 20px;">💧</span>
+            <span>0.5L</span>
+          </button>
+          <button class="water-btn water-pending" id="water2-btn" onclick="toggleField('water2')">
+            <span style="font-size: 20px;">💧</span>
+            <span>0.5L</span>
+          </button>
+          <button class="water-btn water-pending" id="water3-btn" onclick="toggleField('water3')">
+            <span style="font-size: 20px;">💧</span>
+            <span>0.5L</span>
+          </button>
+        </div>
+        <div class="schedule-hint" id="water-hint">0/3 completati — 0L bevuti</div>
       </div>
 
       <!-- Wine Card -->
@@ -416,63 +492,37 @@
       </div>
 
       <!-- Blood Pressure Card -->
-      <div class="card">
+      <div class="card" id="pressure-card">
         <div class="card-header">
           <span class="card-title">Pressione</span>
           <span class="emoji">❤️</span>
         </div>
-        <div class="dual-input">
-          <div>
-            <label class="input-label">Sistolica</label>
-            <input
-              type="number"
-              class="input-field mini-input"
-              placeholder="---"
-              id="systolic-input"
-              inputmode="numeric"
-              onchange="updateField('systolic', this.value)"
-            >
-          </div>
-          <div>
-            <label class="input-label">Diastolica</label>
-            <input
-              type="number"
-              class="input-field mini-input"
-              placeholder="--"
-              id="diastolic-input"
-              inputmode="numeric"
-              onchange="updateField('diastolic', this.value)"
-            >
-          </div>
-        </div>
-        <div class="schedule-hint">Da misurare 2 volte a settimana</div>
+        <div id="pressure-content"></div>
       </div>
 
       <!-- Creatinine Card -->
-      <div class="card">
+      <div class="card" id="creatinine-card">
         <div class="card-header">
           <span class="card-title">Creatinina</span>
           <span class="emoji">🔬</span>
         </div>
-        <input
-          type="number"
-          class="input-field"
-          placeholder="---"
-          id="creatinine-input"
-          inputmode="numeric"
-          onchange="updateField('creatinine', this.value)"
-        >
-        <div class="unit">μmol/L — Obiettivo: 130</div>
-        <div class="schedule-hint">Controllo ogni 15 giorni</div>
+        <div id="creatinine-content"></div>
       </div>
     </div>
 
     <!-- Week View -->
     <div id="view-week" class="hidden">
+      <!-- Week Navigation -->
+      <div class="week-nav">
+        <button class="week-nav-btn" id="week-prev" onclick="changeWeek(-1)">←</button>
+        <span class="week-nav-label" id="week-label">Questa settimana</span>
+        <button class="week-nav-btn" id="week-next" onclick="changeWeek(1)">→</button>
+      </div>
+
       <!-- Weight Weekly -->
       <div class="card">
         <div class="card-header">
-          <span class="card-title">Peso — Ultimi 7 giorni</span>
+          <span class="card-title">Peso</span>
           <span class="emoji">📊</span>
         </div>
         <div class="week-grid" id="week-weight"></div>
@@ -481,7 +531,7 @@
       <!-- Gymnastics Weekly -->
       <div class="card">
         <div class="card-header">
-          <span class="card-title">Ginnastica — Ultimi 7 giorni</span>
+          <span class="card-title">Ginnastica</span>
           <span class="emoji">🧘</span>
         </div>
         <div class="week-grid" id="week-gym"></div>
@@ -491,31 +541,51 @@
       <!-- Run Weekly -->
       <div class="card">
         <div class="card-header">
-          <span class="card-title">Corse — Ultimi 7 giorni</span>
+          <span class="card-title">Corse</span>
           <span class="emoji">🏃</span>
         </div>
         <div class="week-grid" id="week-run"></div>
         <div class="schedule-hint" id="week-run-summary"></div>
       </div>
 
-      <!-- Wine Weekly -->
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title">Vino — Ultimi 7 giorni</span>
-          <span class="emoji">🍷</span>
-        </div>
-        <div class="week-grid" id="week-wine"></div>
-        <div class="schedule-hint" id="week-wine-summary"></div>
-      </div>
-
       <!-- Water Weekly -->
       <div class="card">
         <div class="card-header">
-          <span class="card-title">Acqua — Ultimi 7 giorni</span>
+          <span class="card-title">Acqua — Litri</span>
           <span class="emoji">💧</span>
         </div>
         <div class="week-grid" id="week-water"></div>
-        <div class="schedule-hint" id="week-water-summary"></div>
+        <div class="schedule-hint">Obiettivo: 1.5L al giorno</div>
+      </div>
+
+      <!-- Wine Weekly -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Vino</span>
+          <span class="emoji">🍷</span>
+        </div>
+        <div class="week-grid" id="week-wine"></div>
+        <div class="schedule-hint">🍷 = bevuto (Ven-Sab) • ✅ = confermato no vino (Dom-Gio)</div>
+      </div>
+
+      <!-- Pressure Weekly -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Pressione — Valori</span>
+          <span class="emoji">❤️</span>
+        </div>
+        <div class="week-grid" id="week-pressure"></div>
+        <div class="schedule-hint">Misurazione: Martedì e Venerdì</div>
+      </div>
+
+      <!-- Creatinine Weekly -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Creatinina — Valori</span>
+          <span class="emoji">🔬</span>
+        </div>
+        <div class="week-grid" id="week-creatinine"></div>
+        <div class="schedule-hint">Controllo ogni 2 mercoledì • Obiettivo: 130</div>
       </div>
     </div>
 
@@ -531,17 +601,25 @@
   <script>
     // Data storage
     let data = {};
-    const STORAGE_KEY = 'q1-tracker-data';
+    let weekOffset = 0;
+    const STORAGE_KEY = 'q1-tracker-data-v2';
 
     // Day names
     const dayNames = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
     const dayNamesShort = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
     const monthNames = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
+    const monthNamesShort = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
 
     // Gym schedule: 0=Sun, 1=Mon, etc.
-    const gymSchedule = {
-      0: 'short', 1: 'long', 2: 'short', 3: 'long', 4: 'short', 5: 'long', 6: 'short'
-    };
+    const gymSchedule = { 0: 'short', 1: 'long', 2: 'short', 3: 'long', 4: 'short', 5: 'long', 6: 'short' };
+
+    // Check if it's a creatinine week
+    function isCreatinineWeek(date) {
+      const referenceDate = new Date('2025-01-01');
+      const diffTime = date.getTime() - referenceDate.getTime();
+      const diffWeeks = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 7));
+      return diffWeeks % 2 === 0;
+    }
 
     // Initialize
     function init() {
@@ -608,9 +686,44 @@
       updateUI();
     }
 
-    // Toggle wine
-    function toggleWine() {
-      toggleField('wine');
+    // Get week data
+    function getWeekData() {
+      const weekData = [];
+      const today = new Date();
+      const baseDate = new Date(today);
+      baseDate.setDate(baseDate.getDate() + (weekOffset * 7));
+      
+      for (let i = 6; i >= 0; i--) {
+        const date = new Date(baseDate);
+        date.setDate(date.getDate() - i);
+        const key = date.toISOString().split('T')[0];
+        weekData.push({
+          date: date,
+          key: key,
+          data: data[key] || {},
+          dayName: dayNamesShort[date.getDay()],
+          dayOfWeek: date.getDay()
+        });
+      }
+      return weekData;
+    }
+
+    // Change week
+    function changeWeek(delta) {
+      if (delta > 0 && weekOffset >= 0) return;
+      weekOffset += delta;
+      updateWeekView();
+      document.getElementById('week-next').disabled = weekOffset >= 0;
+    }
+
+    // Get week label
+    function getWeekLabel() {
+      if (weekOffset === 0) return 'Questa settimana';
+      if (weekOffset === -1) return 'Settimana scorsa';
+      const weekData = getWeekData();
+      const firstDay = weekData[0].date;
+      const lastDay = weekData[6].date;
+      return `${firstDay.getDate()} ${monthNamesShort[firstDay.getMonth()]} - ${lastDay.getDate()} ${monthNamesShort[lastDay.getMonth()]}`;
     }
 
     // Update the entire UI
@@ -649,15 +762,9 @@
       if (isRunDay) {
         runCard.className = 'card';
         if (todayData.run) {
-          runContent.innerHTML = `
-            <button class="toggle-btn toggle-done" onclick="toggleField('run')">✓ Fatto!</button>
-            <div class="schedule-hint">Programmata per le 18:00</div>
-          `;
+          runContent.innerHTML = `<button class="toggle-btn toggle-done" onclick="toggleField('run')">✓ Fatto!</button><div class="schedule-hint">Programmata per le 18:00</div>`;
         } else {
-          runContent.innerHTML = `
-            <button class="toggle-btn toggle-pending" onclick="toggleField('run')">Segna come fatto</button>
-            <div class="schedule-hint">Programmata per le 18:00</div>
-          `;
+          runContent.innerHTML = `<button class="toggle-btn toggle-pending" onclick="toggleField('run')">Segna come fatto</button><div class="schedule-hint">Programmata per le 18:00</div>`;
         }
       } else {
         runCard.className = 'card rest-day';
@@ -666,48 +773,78 @@
       }
 
       // Water
-      const waterBtn = document.getElementById('water-btn');
-      if (todayData.water) {
-        waterBtn.className = 'toggle-btn toggle-done';
-        waterBtn.textContent = '✓ 1 litro bevuto';
-      } else {
-        waterBtn.className = 'toggle-btn toggle-pending';
-        waterBtn.textContent = 'Obiettivo: 1 litro';
-      }
+      ['water1', 'water2', 'water3'].forEach(w => {
+        const btn = document.getElementById(`${w}-btn`);
+        btn.className = `water-btn ${todayData[w] ? 'water-done' : 'water-pending'}`;
+      });
+      const waterCount = (todayData.water1 ? 1 : 0) + (todayData.water2 ? 1 : 0) + (todayData.water3 ? 1 : 0);
+      document.getElementById('water-hint').textContent = `${waterCount}/3 completati — ${waterCount * 0.5}L bevuti`;
 
       // Wine
-      const isNoWineDay = dayOfWeek >= 1 && dayOfWeek <= 4;
-      const isWineChoiceDay = dayOfWeek === 5 || dayOfWeek === 6;
+      const isWineAllowed = dayOfWeek === 5 || dayOfWeek === 6;
       const wineContent = document.getElementById('wine-content');
       const wineHint = document.getElementById('wine-hint');
 
-      if (isNoWineDay) {
-        wineContent.innerHTML = `<div class="toggle-btn toggle-wine-no" style="cursor: default;">✗ Oggi no vino (Lun-Gio)</div>`;
-        wineHint.textContent = 'Lun-Gio: no vino';
-      } else if (isWineChoiceDay) {
+      if (isWineAllowed) {
         if (todayData.wine) {
-          wineContent.innerHTML = `<button class="toggle-btn toggle-wine-ok" onclick="toggleWine()">🍷 Vino scelto per oggi</button>`;
+          wineContent.innerHTML = `<button class="toggle-btn toggle-wine-ok" onclick="toggleField('wine')">🍷 Vino bevuto</button>`;
         } else {
-          wineContent.innerHTML = `<button class="toggle-btn toggle-pending" onclick="toggleWine()">Usa il tuo bicchiere settimanale?</button>`;
+          wineContent.innerHTML = `<button class="toggle-btn toggle-pending" onclick="toggleField('wine')">Segna se bevi vino</button>`;
         }
-        wineHint.textContent = '1 solo tra Ven e Sab';
+        wineHint.textContent = 'Ven-Sab: consentito';
       } else {
-        if (todayData.wine) {
-          wineContent.innerHTML = `<button class="toggle-btn toggle-wine-ok" onclick="toggleWine()">🍷 Vino bevuto</button>`;
+        if (todayData.noWine) {
+          wineContent.innerHTML = `<button class="toggle-btn toggle-done" onclick="toggleField('noWine')">✓ Confermato: no vino oggi</button>`;
         } else {
-          wineContent.innerHTML = `<button class="toggle-btn toggle-pending" onclick="toggleWine()">Domenica libera</button>`;
+          wineContent.innerHTML = `<button class="toggle-btn toggle-pending" onclick="toggleField('noWine')">Conferma: niente vino oggi</button>`;
         }
-        wineHint.textContent = 'Domenica: scelta libera';
+        wineHint.textContent = 'Dom-Gio: no vino';
       }
 
       // Blood pressure
-      document.getElementById('systolic-input').value = todayData.systolic || '';
-      document.getElementById('diastolic-input').value = todayData.diastolic || '';
+      const isPressureDay = dayOfWeek === 2 || dayOfWeek === 5;
+      const pressureCard = document.getElementById('pressure-card');
+      const pressureContent = document.getElementById('pressure-content');
+
+      if (isPressureDay) {
+        pressureCard.className = 'card';
+        pressureContent.innerHTML = `
+          <div class="dual-input" style="margin-bottom: 12px;">
+            <div>
+              <label class="input-label">Sistolica</label>
+              <input type="number" class="input-field mini-input" placeholder="---" id="systolic-input" inputmode="numeric" value="${todayData.systolic || ''}" onchange="updateField('systolic', this.value)">
+            </div>
+            <div>
+              <label class="input-label">Diastolica</label>
+              <input type="number" class="input-field mini-input" placeholder="--" id="diastolic-input" inputmode="numeric" value="${todayData.diastolic || ''}" onchange="updateField('diastolic', this.value)">
+            </div>
+          </div>
+          <div class="schedule-hint">Giorno di misurazione (Mar/Ven)</div>
+        `;
+      } else {
+        pressureCard.className = 'card rest-day';
+        const nextPressure = dayOfWeek < 2 ? 'Martedì' : dayOfWeek < 5 ? 'Venerdì' : 'Martedì';
+        pressureContent.innerHTML = `<div class="rest-day-text">Prossima misurazione: ${nextPressure}</div>`;
+      }
 
       // Creatinine
-      document.getElementById('creatinine-input').value = todayData.creatinine || '';
+      const isCreatinineDay = dayOfWeek === 3 && isCreatinineWeek(today);
+      const creatinineCard = document.getElementById('creatinine-card');
+      const creatinineContent = document.getElementById('creatinine-content');
 
-      // Update week view
+      if (isCreatinineDay) {
+        creatinineCard.className = 'card';
+        creatinineContent.innerHTML = `
+          <input type="number" class="input-field" placeholder="---" id="creatinine-input" inputmode="numeric" value="${todayData.creatinineValue || ''}" onchange="updateField('creatinineValue', this.value)">
+          <div class="unit">μmol/L — Obiettivo: 130</div>
+          <div class="schedule-hint">Controllo ogni 2 settimane (Mercoledì)</div>
+        `;
+      } else {
+        creatinineCard.className = 'card rest-day';
+        creatinineContent.innerHTML = `<div class="rest-day-text">Controllo ogni 2 mercoledì</div>`;
+      }
+
+      // Update week view if visible
       updateWeekView();
     }
 
@@ -722,115 +859,107 @@
       document.getElementById('weight-percent').textContent = `${percent.toFixed(0)}%`;
     }
 
-    // Get week data (last 7 days)
-    function getWeekData() {
-      const weekData = [];
-      const today = new Date();
-      for (let i = 6; i >= 0; i--) {
-        const date = new Date(today);
-        date.setDate(date.getDate() - i);
-        const key = date.toISOString().split('T')[0];
-        weekData.push({
-          date: date,
-          key: key,
-          data: data[key] || {},
-          dayName: dayNamesShort[date.getDay()],
-          dayOfWeek: date.getDay()
-        });
-      }
-      return weekData;
-    }
-
     // Update week view
     function updateWeekView() {
       const weekData = getWeekData();
 
+      // Week label
+      document.getElementById('week-label').textContent = getWeekLabel();
+      document.getElementById('week-next').disabled = weekOffset >= 0;
+
       // Weight
-      let weightHtml = '';
-      weekData.forEach(day => {
-        const color = day.data.weight ? '#a5b4fc' : 'rgba(255,255,255,0.2)';
-        weightHtml += `
+      document.getElementById('week-weight').innerHTML = weekData.map(day => `
+        <div class="week-day">
+          <div class="week-day-name">${day.dayName}</div>
+          <div class="week-day-status" style="font-family: 'Space Mono', monospace; font-size: 12px; color: ${day.data.weight ? '#a5b4fc' : 'rgba(255,255,255,0.2)'};">
+            ${day.data.weight || '—'}
+          </div>
+        </div>
+      `).join('');
+
+      // Gymnastics
+      document.getElementById('week-gym').innerHTML = weekData.map(day => {
+        const gymType = gymSchedule[day.dayOfWeek];
+        return `
           <div class="week-day">
             <div class="week-day-name">${day.dayName}</div>
-            <div class="week-day-status" style="font-family: 'Space Mono', monospace; font-size: 12px; color: ${color};">
-              ${day.data.weight || '—'}
+            <div class="week-day-status">${day.data.gym ? (gymType === 'long' ? '💪' : '⚡') : '⬜'}</div>
+          </div>
+        `;
+      }).join('');
+      document.getElementById('week-gym-summary').textContent = `Sessioni fatte: ${weekData.filter(d => d.data.gym).length} / 7 • 💪 = long, ⚡ = short`;
+
+      // Run
+      document.getElementById('week-run').innerHTML = weekData.map(day => {
+        const isRunDay = day.dayOfWeek === 1 || day.dayOfWeek === 3;
+        return `
+          <div class="week-day">
+            <div class="week-day-name">${day.dayName}</div>
+            <div class="week-day-status">${isRunDay ? (day.data.run ? '✅' : '⬜') : '·'}</div>
+          </div>
+        `;
+      }).join('');
+      const runDays = weekData.filter(d => d.dayOfWeek === 1 || d.dayOfWeek === 3);
+      document.getElementById('week-run-summary').textContent = `Corse fatte: ${weekData.filter(d => d.data.run).length} / ${runDays.length} programmate`;
+
+      // Water
+      document.getElementById('week-water').innerHTML = weekData.map(day => {
+        const waterCount = (day.data.water1 ? 1 : 0) + (day.data.water2 ? 1 : 0) + (day.data.water3 ? 1 : 0);
+        const liters = waterCount * 0.5;
+        return `
+          <div class="week-day">
+            <div class="week-day-name">${day.dayName}</div>
+            <div class="week-day-status" style="font-family: 'Space Mono', monospace; font-size: 12px; color: ${liters > 0 ? '#0ea5e9' : 'rgba(255,255,255,0.2)'};">
+              ${liters > 0 ? `${liters}L` : '—'}
             </div>
           </div>
         `;
-      });
-      document.getElementById('week-weight').innerHTML = weightHtml;
-
-      // Gymnastics
-      let gymHtml = '';
-      let gymDone = 0;
-      weekData.forEach(day => {
-        const gymType = gymSchedule[day.dayOfWeek];
-        let status = '⬜';
-        if (day.data.gym) {
-          status = gymType === 'long' ? '💪' : '⚡';
-          gymDone++;
-        }
-        gymHtml += `
-          <div class="week-day">
-            <div class="week-day-name">${day.dayName}</div>
-            <div class="week-day-status">${status}</div>
-          </div>
-        `;
-      });
-      document.getElementById('week-gym').innerHTML = gymHtml;
-      document.getElementById('week-gym-summary').textContent = `Sessioni fatte: ${gymDone} / 7 • 💪 = long, ⚡ = short`;
-
-      // Run
-      let runHtml = '';
-      let runDone = 0;
-      let runScheduled = 0;
-      weekData.forEach(day => {
-        const isRunDay = day.dayOfWeek === 1 || day.dayOfWeek === 3;
-        if (isRunDay) runScheduled++;
-        let status = isRunDay ? (day.data.run ? '✅' : '⬜') : '·';
-        if (day.data.run) runDone++;
-        runHtml += `
-          <div class="week-day">
-            <div class="week-day-name">${day.dayName}</div>
-            <div class="week-day-status">${status}</div>
-          </div>
-        `;
-      });
-      document.getElementById('week-run').innerHTML = runHtml;
-      document.getElementById('week-run-summary').textContent = `Corse fatte: ${runDone} / ${runScheduled} programmate`;
+      }).join('');
 
       // Wine
-      let wineHtml = '';
-      let wineDrunk = 0;
-      weekData.forEach(day => {
-        const isNoWine = day.dayOfWeek >= 1 && day.dayOfWeek <= 4;
-        let status = day.data.wine ? '🍷' : (isNoWine ? '🚫' : '·');
-        if (day.data.wine) wineDrunk++;
-        wineHtml += `
+      document.getElementById('week-wine').innerHTML = weekData.map(day => {
+        const isAllowed = day.dayOfWeek === 5 || day.dayOfWeek === 6;
+        let status = '·';
+        if (isAllowed) {
+          status = day.data.wine ? '🍷' : '·';
+        } else {
+          status = day.data.noWine ? '✅' : '⬜';
+        }
+        return `
           <div class="week-day">
             <div class="week-day-name">${day.dayName}</div>
             <div class="week-day-status">${status}</div>
           </div>
         `;
-      });
-      document.getElementById('week-wine').innerHTML = wineHtml;
-      document.getElementById('week-wine-summary').textContent = `Bicchieri questa settimana: ${wineDrunk}`;
+      }).join('');
 
-      // Water
-      let waterHtml = '';
-      let waterDone = 0;
-      weekData.forEach(day => {
-        let status = day.data.water ? '💧' : '·';
-        if (day.data.water) waterDone++;
-        waterHtml += `
+      // Pressure
+      document.getElementById('week-pressure').innerHTML = weekData.map(day => {
+        const isPressureDay = day.dayOfWeek === 2 || day.dayOfWeek === 5;
+        const hasValue = day.data.systolic && day.data.diastolic;
+        return `
           <div class="week-day">
             <div class="week-day-name">${day.dayName}</div>
-            <div class="week-day-status">${status}</div>
+            <div class="week-day-status" style="font-family: 'Space Mono', monospace; font-size: 9px; color: ${hasValue ? '#f472b6' : 'rgba(255,255,255,0.2)'};">
+              ${isPressureDay ? (hasValue ? `${day.data.systolic}/${day.data.diastolic}` : '—') : '·'}
+            </div>
           </div>
         `;
-      });
-      document.getElementById('week-water').innerHTML = waterHtml;
-      document.getElementById('week-water-summary').textContent = `Giorni con 1L: ${waterDone} / 7`;
+      }).join('');
+
+      // Creatinine
+      document.getElementById('week-creatinine').innerHTML = weekData.map(day => {
+        const isCreatDay = day.dayOfWeek === 3 && isCreatinineWeek(day.date);
+        const hasValue = day.data.creatinineValue;
+        return `
+          <div class="week-day">
+            <div class="week-day-name">${day.dayName}</div>
+            <div class="week-day-status" style="font-family: 'Space Mono', monospace; font-size: 11px; color: ${hasValue ? '#a78bfa' : 'rgba(255,255,255,0.2)'};">
+              ${isCreatDay ? (hasValue ? hasValue : '—') : '·'}
+            </div>
+          </div>
+        `;
+      }).join('');
     }
 
     // Show tab
@@ -839,6 +968,10 @@
       document.getElementById('view-week').classList.toggle('hidden', tab !== 'week');
       document.getElementById('tab-today').className = `tab ${tab === 'today' ? 'tab-active' : 'tab-inactive'}`;
       document.getElementById('tab-week').className = `tab ${tab === 'week' ? 'tab-active' : 'tab-inactive'}`;
+      if (tab === 'week') {
+        weekOffset = 0;
+        updateWeekView();
+      }
     }
 
     // Reset data
